@@ -1,0 +1,12 @@
+{% load static %}
+<link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+<div class="links">
+    <a href="{% url 'turnover' %}" class="link-to-index">Turnover</a>
+    <a href="{% url 'best_colors' %}" class="link-to-index">Other</a>
+</div>
+
+{% load plotly_dash %}
+{% plotly_app name='BestSelling' %}
+
+

@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres-container
+    environment:
+      POSTGRES_DB: admin_dash
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    env_file:
+      - ../backend/.env
+    ports:
+      - "5050:80"
+
+
+  django:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: django-container
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    environment:
+      - POSTGRES_HOST=postgres
+    volumes:
+      - ../backend:/app
+
+
+volumes:
+  postgres_data:
