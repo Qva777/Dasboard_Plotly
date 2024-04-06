@@ -1,0 +1,100 @@
+[
+  {
+    "model": "ordercast_order.order",
+    "pk": "0678a8ad-cbfc-4b7f-ac96-6dddb73b5323",
+    "fields": {
+      "created_at": "2024-04-06T18:07:45.607Z",
+      "updated_at": "2024-04-06T18:07:45.607Z",
+      "active": true,
+      "products": "698b3f08-40ed-4b9c-97df-a1d023f748b9",
+      "client": "30e5a4f6-d193-459a-95bc-429bab5b63ca",
+      "total": "10.00",
+      "billing_country": "132c5743-9e5e-4023-9679-809b80ddc598",
+      "shipping_country": "6a99de45-3524-4db7-a7ef-afab12ec0e6d"
+    }
+  },
+  {
+    "model": "ordercast_order.order",
+    "pk": "3d0780a9-f500-4b63-be55-ba9089039763",
+    "fields": {
+      "created_at": "2024-04-06T18:09:14.532Z",
+      "updated_at": "2024-04-06T18:09:14.532Z",
+      "active": true,
+      "products": "73d1306b-e224-48cc-990c-b417a8579694",
+      "client": "6a76c771-aec1-4031-984f-3e2e2dc14522",
+      "total": "123.00",
+      "billing_country": "0ce8c5cd-50f8-480f-8d70-395ba5becd11",
+      "shipping_country": "5cb9eb24-0b98-4624-a25a-b307a23d5798"
+    }
+  },
+  {
+    "model": "ordercast_order.order",
+    "pk": "81b0f4d2-18a0-4b70-8800-e2700eed6b8b",
+    "fields": {
+      "created_at": "2024-04-06T18:08:18.799Z",
+      "updated_at": "2024-04-06T18:08:18.799Z",
+      "active": true,
+      "products": "49bdfbba-d0b5-43dd-9e70-4c577ef0d5ed",
+      "client": "41ea92f5-3ce9-4557-80ec-2049bf39f12e",
+      "total": "200.00",
+      "billing_country": "2c42f450-a8e4-43ec-914a-527eab723fd6",
+      "shipping_country": "c3e6ac33-029d-4a93-ae51-5d9434a8a4c9"
+    }
+  },
+  {
+    "model": "ordercast_order.order",
+    "pk": "ab034c0a-8282-4076-ab6c-a268c0c1a05b",
+    "fields": {
+      "created_at": "2024-04-06T18:08:46.976Z",
+      "updated_at": "2024-04-06T18:08:46.976Z",
+      "active": true,
+      "products": "dc070827-7760-4375-8384-74f5b3f60fc3",
+      "client": "68af1dab-97c0-4b29-be87-53e6c0b9bd44",
+      "total": "100.00",
+      "billing_country": "1a919620-3255-4d66-ba6c-a8393d2fb47b",
+      "shipping_country": "23c6f42e-c6ca-42cc-9d34-7ecd5ceb57f6"
+    }
+  },
+  {
+    "model": "ordercast_order.order",
+    "pk": "b7104dfa-cbcc-4c0b-be39-f7ad23b95797",
+    "fields": {
+      "created_at": "2024-04-06T18:08:01.334Z",
+      "updated_at": "2024-04-06T18:08:01.334Z",
+      "active": true,
+      "products": "698b3f08-40ed-4b9c-97df-a1d023f748b9",
+      "client": "30e5a4f6-d193-459a-95bc-429bab5b63ca",
+      "total": "10.00",
+      "billing_country": "132c5743-9e5e-4023-9679-809b80ddc598",
+      "shipping_country": "6a99de45-3524-4db7-a7ef-afab12ec0e6d"
+    }
+  },
+  {
+    "model": "ordercast_order.order",
+    "pk": "b8881358-43e7-48f6-857e-b4ee522de820",
+    "fields": {
+      "created_at": "2024-04-06T18:09:01.817Z",
+      "updated_at": "2024-04-06T18:09:01.817Z",
+      "active": true,
+      "products": "49c99319-330f-4cf9-b5e2-baefb91d9ddd",
+      "client": "646045d5-d454-44f8-ba72-50a1de5dd332",
+      "total": "55.00",
+      "billing_country": "5cb9eb24-0b98-4624-a25a-b307a23d5798",
+      "shipping_country": "1a919620-3255-4d66-ba6c-a8393d2fb47b"
+    }
+  },
+  {
+    "model": "ordercast_order.order",
+    "pk": "f9efedb1-c439-4c57-b48d-3f835f921d60",
+    "fields": {
+      "created_at": "2024-04-06T18:08:32.864Z",
+      "updated_at": "2024-04-06T18:08:32.864Z",
+      "active": true,
+      "products": "da7ef7f0-4c41-46dc-ba54-9e505422a25f",
+      "client": "68af1dab-97c0-4b29-be87-53e6c0b9bd44",
+      "total": "300.00",
+      "billing_country": "c3e6ac33-029d-4a93-ae51-5d9434a8a4c9",
+      "shipping_country": "2235aa00-2e7e-47e6-9759-ced6b864f480"
+    }
+  }
+]

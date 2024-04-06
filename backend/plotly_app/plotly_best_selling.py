@@ -1,45 +1,24 @@
 import datetime
 import dash_table
 import plotly.graph_objs as go
+
+from collections import Counter
 from dash import html, dcc
 from dash.dependencies import Input, Output
-
 from django.db.models import Q
 from django_plotly_dash import DjangoDash
 
 from ordercast_client.repositories import ClientRepository
 from ordercast_country.repositories import CountryRepository
 from ordercast_order.repositories import OrderRepository
-
 from plotly_app.style import input_style, dropdown
 
 # Create a DjangoDash app
 app = DjangoDash('BestSelling')
 
-# Order country
-orders = OrderRepository.get_related_country()
-order_country_data = [
-    {
-        'ref': order.products.ref,
-        'color': order.products.color,
-        'tariff_name': order.client.tariff_name,
-        'billing_country': order.billing_country.name,
-    }
-    for order in orders
-]
-
-# Order client
-order_client_data = OrderRepository.get_related_client()
-client_data = [
-    {
-        "username": order["client__username"],
-        "email": order["client__email"],
-        "ref": order["products__ref"],
-        "color": order["products__color"],
-        "price": order["total"],
-    }
-    for order in order_client_data
-]
+# Tables
+output_sorted_client = []
+output_sorted_country = []
 
 # Layout of the app
 app.layout = html.Div(
@@ -80,8 +59,10 @@ app.layout = html.Div(
                     html.Br(),
                     dash_table.DataTable(
                         id="client-table",
-                        columns=[{"name": c, "id": c} for c in ["username", "email", "ref", "color", "price"]],
-                        data=client_data,
+                        columns=[
+                            {"name": c, "id": c} for c in ["username", "email", "ref", "color", "price", "quantity"]
+                        ],
+                        data=output_sorted_client,
                         page_size=10,
                         sort_action="native",
                         style_cell=dict(textAlign='center'),
@@ -124,13 +105,12 @@ app.layout = html.Div(
             html.Div([
                 dash_table.DataTable(
                     id="table",
-                    columns=[{"name": c, "id": c} for c in ["ref", "color", "tariff_name", "billing_country"]],
-                    data=order_country_data,
+                    columns=[{"name": c, "id": c} for c in ["ref", "color", "quantity"]],
+                    data=output_sorted_country,
                     page_size=10,
                     sort_action="native",
                     filter_action="native",
                     style_cell=dict(textAlign='center'),
-
                 ),
             ], style={'margin-top': '15px'}),
         ]),
@@ -222,19 +202,30 @@ def update_table_client(search_query, time_filter):
     # Filter the queryset
     queryset = filter_queryset(queryset, search_query=search_query, time_filter=time_filter)
 
-    # Retrieve filtered data
-    filtered_data = [
+    # Group the data by 'client__username' and 'products__ref'
+    counts_client = Counter((entry["client__username"], entry["products__ref"]) for entry in queryset)
+
+    # Construct the output list with grouped products, their quantities, and the total amount
+    output_client = [
         {
-            "username": entry["client__username"],
-            "email": entry["client__email"],
-            "ref": entry["products__ref"],
-            "color": entry["products__color"],
-            "price": entry["total"],
+            "username": username,
+            "email": next(entry["client__email"] for entry in queryset if
+                          (entry["client__username"], entry["products__ref"]) == group),
+            "ref": ref,
+            "color": next(entry["products__color"] for entry in queryset if
+                          (entry["client__username"], entry["products__ref"]) == group),
+            "price": sum(float(entry["total"]) for entry in queryset if
+                         (entry["client__username"], entry["products__ref"]) == group),
+            "quantity": str(count)
         }
-        for entry in queryset
+        for group, count in counts_client.items()
+        for username, ref in [group]
     ]
 
-    return filtered_data
+    # Sort the output list by quantity in descending order
+    output_sorted_clients = sorted(output_client, key=lambda x: int(x["quantity"]), reverse=True)
+
+    return output_sorted_clients
 
 
 @app.callback([
@@ -258,11 +249,12 @@ def update_dropdowns(selected_countries, selected_tariffs):
     return dropdown_countries, dropdown_clients
 
 
-@app.callback(Output("table", "data"),
-              [Input("search-input", "value"),
-               Input("country-dropdown", "value"),
-               Input("tariff-dropdown", "value"),
-               Input("time-filter", "value")])
+@app.callback(
+    Output("table", "data"),
+    [Input("search-input", "value"),
+     Input("country-dropdown", "value"),
+     Input("tariff-dropdown", "value"),
+     Input("time-filter", "value")])
 def update_table_country(search_query, selected_countries, selected_tariff, time_filter):
     """ When the page reloads, also reloads the table """
 
@@ -283,4 +275,22 @@ def update_table_country(search_query, selected_countries, selected_tariff, time
         for order in queryset
     ]
 
-    return filtered_data
+    # Count occurrences of each unique combination of 'ref', 'tariff_name', and 'billing_country'
+    counts = Counter((d['ref'], d['tariff_name'], d['billing_country']) for d in filtered_data)
+
+    # Construct the output list with grouped products and their quantities
+    output_country = [
+        {
+            'ref': ref,
+            'color': next(
+                d['color'] for d in filtered_data if (d['ref'], d['tariff_name'], d['billing_country']) == group),
+            'quantity': str(count)
+        }
+        for group, count in counts.items()
+        for ref, tariff_name, billing_country in [group]
+    ]
+
+    # Sort the output list by quantity in descending order
+    output_sorted_countries = sorted(output_country, key=lambda x: int(x['quantity']), reverse=True)
+
+    return output_sorted_countries

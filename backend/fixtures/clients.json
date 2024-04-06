@@ -1,0 +1,93 @@
+[
+  {
+    "model": "ordercast_client.client",
+    "pk": "1bc32a32-3424-4fd4-9bd2-043d298cb332",
+    "fields": {
+      "created_at": "2024-04-06T11:19:29.126Z",
+      "updated_at": "2024-04-06T11:19:29.126Z",
+      "active": true,
+      "username": "Igor Difor",
+      "email": "igor@gmail.com",
+      "is_approved": true,
+      "tariff_name": "T4"
+    }
+  },
+  {
+    "model": "ordercast_client.client",
+    "pk": "30e5a4f6-d193-459a-95bc-429bab5b63ca",
+    "fields": {
+      "created_at": "2024-04-06T11:17:23.571Z",
+      "updated_at": "2024-04-06T11:17:23.571Z",
+      "active": true,
+      "username": "admin",
+      "email": "admin@gmail.com",
+      "is_approved": true,
+      "tariff_name": "T0"
+    }
+  },
+  {
+    "model": "ordercast_client.client",
+    "pk": "41ea92f5-3ce9-4557-80ec-2049bf39f12e",
+    "fields": {
+      "created_at": "2024-04-06T11:17:46.666Z",
+      "updated_at": "2024-04-06T11:17:46.666Z",
+      "active": true,
+      "username": "Kolya Kolich",
+      "email": "kolya@gmail.como",
+      "is_approved": true,
+      "tariff_name": "T1"
+    }
+  },
+  {
+    "model": "ordercast_client.client",
+    "pk": "646045d5-d454-44f8-ba72-50a1de5dd332",
+    "fields": {
+      "created_at": "2024-04-06T11:20:11.007Z",
+      "updated_at": "2024-04-06T11:20:11.007Z",
+      "active": true,
+      "username": "Nikita Lavich",
+      "email": "nikita@gmail.com",
+      "is_approved": true,
+      "tariff_name": "T5"
+    }
+  },
+  {
+    "model": "ordercast_client.client",
+    "pk": "68af1dab-97c0-4b29-be87-53e6c0b9bd44",
+    "fields": {
+      "created_at": "2024-04-06T11:19:00.202Z",
+      "updated_at": "2024-04-06T11:19:00.202Z",
+      "active": true,
+      "username": "Joy Bilish",
+      "email": "joy@gmail.com",
+      "is_approved": true,
+      "tariff_name": "T3"
+    }
+  },
+  {
+    "model": "ordercast_client.client",
+    "pk": "6a76c771-aec1-4031-984f-3e2e2dc14522",
+    "fields": {
+      "created_at": "2024-04-06T11:20:41.352Z",
+      "updated_at": "2024-04-06T11:20:41.352Z",
+      "active": true,
+      "username": "Valik Akich",
+      "email": "ackich@gmail.com",
+      "is_approved": true,
+      "tariff_name": "T2"
+    }
+  },
+  {
+    "model": "ordercast_client.client",
+    "pk": "a42d0b86-c8fc-423f-8e04-b9fc8e50a403",
+    "fields": {
+      "created_at": "2024-04-06T11:18:28.478Z",
+      "updated_at": "2024-04-06T11:18:28.478Z",
+      "active": true,
+      "username": "Andrey Kistov",
+      "email": "andrey@gmail.com",
+      "is_approved": false,
+      "tariff_name": "T2"
+    }
+  }
+]

@@ -1,4 +1,4 @@
-from django.db.models import Count
+from django.db.models import Count, Sum
 from ordercast_product.models import Product
 
 
@@ -6,4 +6,4 @@ class ColorRepository:
     @staticmethod
     def get_top_colors():
         """ Get top best-selling colors """
-        return Product.objects.values('color').annotate(count=Count('color')).order_by('-count')[:5]
+        return Product.objects.annotate(num_orders=Count('orders')).order_by('-num_orders')[:5]

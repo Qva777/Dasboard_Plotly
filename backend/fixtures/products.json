@@ -1,0 +1,101 @@
+[
+  {
+    "model": "ordercast_product.product",
+    "pk": "3ff561a4-aa03-47aa-b10f-8e6291086393",
+    "fields": {
+      "created_at": "2024-04-06T11:15:30.923Z",
+      "updated_at": "2024-04-06T11:15:30.923Z",
+      "active": true,
+      "ref": "06",
+      "color": "white"
+    }
+  },
+  {
+    "model": "ordercast_product.product",
+    "pk": "4802cd6f-ed10-46bf-a8a3-e8f03e021a0e",
+    "fields": {
+      "created_at": "2024-04-06T11:15:49.548Z",
+      "updated_at": "2024-04-06T11:15:49.548Z",
+      "active": true,
+      "ref": "07",
+      "color": "green"
+    }
+  },
+  {
+    "model": "ordercast_product.product",
+    "pk": "49bdfbba-d0b5-43dd-9e70-4c577ef0d5ed",
+    "fields": {
+      "created_at": "2024-04-06T11:14:45.153Z",
+      "updated_at": "2024-04-06T11:14:45.153Z",
+      "active": true,
+      "ref": "02",
+      "color": "green"
+    }
+  },
+  {
+    "model": "ordercast_product.product",
+    "pk": "49c99319-330f-4cf9-b5e2-baefb91d9ddd",
+    "fields": {
+      "created_at": "2024-04-06T11:15:19.932Z",
+      "updated_at": "2024-04-06T11:15:19.932Z",
+      "active": true,
+      "ref": "05",
+      "color": "red"
+    }
+  },
+  {
+    "model": "ordercast_product.product",
+    "pk": "698b3f08-40ed-4b9c-97df-a1d023f748b9",
+    "fields": {
+      "created_at": "2024-04-06T11:14:39.282Z",
+      "updated_at": "2024-04-06T11:14:39.282Z",
+      "active": true,
+      "ref": "01",
+      "color": "red"
+    }
+  },
+  {
+    "model": "ordercast_product.product",
+    "pk": "73d1306b-e224-48cc-990c-b417a8579694",
+    "fields": {
+      "created_at": "2024-04-06T11:16:57.194Z",
+      "updated_at": "2024-04-06T11:16:57.194Z",
+      "active": true,
+      "ref": "10",
+      "color": "blue"
+    }
+  },
+  {
+    "model": "ordercast_product.product",
+    "pk": "da7ef7f0-4c41-46dc-ba54-9e505422a25f",
+    "fields": {
+      "created_at": "2024-04-06T11:14:53.619Z",
+      "updated_at": "2024-04-06T11:14:53.619Z",
+      "active": true,
+      "ref": "03",
+      "color": "yellow"
+    }
+  },
+  {
+    "model": "ordercast_product.product",
+    "pk": "dc070827-7760-4375-8384-74f5b3f60fc3",
+    "fields": {
+      "created_at": "2024-04-06T11:15:02.119Z",
+      "updated_at": "2024-04-06T11:15:02.119Z",
+      "active": true,
+      "ref": "04",
+      "color": "black"
+    }
+  },
+  {
+    "model": "ordercast_product.product",
+    "pk": "dca8a705-5911-4ae4-a058-2905a7cfd83b",
+    "fields": {
+      "created_at": "2024-04-06T11:15:54.898Z",
+      "updated_at": "2024-04-06T11:15:54.898Z",
+      "active": true,
+      "ref": "08",
+      "color": "red"
+    }
+  }
+]

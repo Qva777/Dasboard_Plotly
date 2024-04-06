@@ -15,8 +15,9 @@ def get_top_colors():
     # Get top 5 colors from db
     top_colors = ColorRepository.get_top_colors()
 
-    colors = [item['color'] for item in top_colors]
-    counts = [item['count'] for item in top_colors]
+    colors = [color.color for color in top_colors]
+    counts = [color.num_orders for color in top_colors]
+
     return colors, counts
 
 
