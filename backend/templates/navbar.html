@@ -1,0 +1,21 @@
+{% load static %}
+<link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+<div class="links">
+
+    <a href="{% url 'turnover' %}"
+       class="link-to-index{% if request.resolver_match.url_name  == 'turnover' %} selected{% endif %}">
+        Turnover
+    </a>
+
+    <a href="{% url 'best_selling_products' %}"
+       class="link-to-index{% if request.resolver_match.url_name == 'best_selling_products' %} selected{% endif %}">
+        Best-selling products
+    </a>
+
+    <a href="{% url 'best_colors' %}"
+       class="link-to-index{% if request.resolver_match.url_name == 'best_colors' %} selected{% endif %}">
+        Best-selling color
+    </a>
+
+</div>
