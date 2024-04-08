@@ -13,13 +13,16 @@ app = DjangoDash('TurnoverApp')
 def calculate_turnover():
     """ Calculates the turnover value """
 
-    # Turnover per client
+    # Turnover per client Diagram
+    client_diagram_data = OrderRepository.client_diagram_data()
+
+    # Turnover per client Table
     client_turnover_data = OrderRepository.client_turnover_data()
 
-    # Turnover per country
+    # Turnover per Country
     country_turnover_data = OrderRepository.country_turnover_data()
 
-    return client_turnover_data, country_turnover_data
+    return client_diagram_data, client_turnover_data, country_turnover_data
 
 
 # Layout of the app
@@ -112,14 +115,14 @@ app.layout = html.Div([
 def update_graph(selected_data_type):
     """ Update the graph """
 
-    # Calculate turnover data
-    client_turnover_data, country_turnover_data = calculate_turnover()
+    # Calculate total price data
+    client_diagram_data, _, country_turnover_data = calculate_turnover()
 
     # Prepare data for the graph depending on the selected data type
     if selected_data_type == 'client':
-        labels = [f"{client['client__tariff_name']} - {client['client__username']}" for client in client_turnover_data]
-        values = [client['turnover'] for client in client_turnover_data]
-        title = 'Top 10 Clients by Turnover'
+        labels = [f"{client['client__tariff_name']} - ${client['total_price']}" for client in client_diagram_data]
+        values = [client['total_price'] for client in client_diagram_data]
+        title = 'Top 10 Tariffs by Total Price'
     else:
         labels = [country['billing_country__name'] for country in country_turnover_data]
         values = [country['turnover'] for country in country_turnover_data]
@@ -143,7 +146,7 @@ def update_client_table(selected_data_type, search_query):
     """ Update the client table """
 
     # Calculate turnover data
-    client_turnover_data, _ = calculate_turnover()
+    _, client_turnover_data, _ = calculate_turnover()
 
     # Prepare data for the client table
     client_table_data = [{'client__username': client['client__username'],
@@ -169,7 +172,7 @@ def update_country_table(selected_data_type, search_query):
     """ Update the country table """
 
     # Calculate turnover data
-    _, country_turnover_data = calculate_turnover()
+    _, _, country_turnover_data = calculate_turnover()
 
     # Prepare data for the country table
     country_table_data = [

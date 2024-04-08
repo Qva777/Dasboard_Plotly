@@ -1,4 +1,4 @@
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from ordercast_order.models import Order
 from ordercast_client.models import Client
 
@@ -6,12 +6,22 @@ from ordercast_client.models import Client
 class OrderRepository:
     @staticmethod
     def client_turnover_data():
-        """ Calculate turnover per client """
+        """ Calculate turnover per client table"""
         return (
             Order.objects
             .values('client__username', 'client__email', 'client__tariff_name')
             .annotate(turnover=Sum('total'))
             .order_by('-turnover')
+        )
+
+    @staticmethod
+    def client_diagram_data():
+        """ Calculate turnover per client Diagram """
+        return (
+            Order.objects
+            .values('client__tariff_name')
+            .annotate(total_price=Sum('total'))
+            .order_by('-total_price')
         )
 
     @staticmethod

@@ -7,7 +7,9 @@ class OrderAdmin(admin.ModelAdmin):
     """ Order fields in the admin panel """
 
     list_display = (
-        'get_email', 'get_ref', 'get_color', 'total', 'billing_country', 'shipping_country', 'created_at', 'active')
+        'get_email', 'get_tariff', 'get_ref', 'get_color', 'total',
+        'billing_country', 'shipping_country', 'created_at', 'active'
+    )
     list_display_links = ('get_email', 'get_ref',)
     list_editable = ('active',)
     search_fields = ('products__ref', 'client__email')
@@ -23,6 +25,10 @@ class OrderAdmin(admin.ModelAdmin):
     def get_email(self, obj):
         return obj.client.email
 
-    get_color.short_description = 'Color'
-    get_email.short_description = 'Email'
+    def get_tariff(self, obj):
+        return obj.client.tariff_name
+
     get_ref.short_description = 'Ref'
+    get_email.short_description = 'Email'
+    get_color.short_description = 'Color'
+    get_tariff.short_description = 'Tariff'
