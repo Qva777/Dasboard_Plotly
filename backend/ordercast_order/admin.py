@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from ordercast_order.models import Order
 
 
@@ -7,7 +6,8 @@ from ordercast_order.models import Order
 class OrderAdmin(admin.ModelAdmin):
     """ Order fields in the admin panel """
 
-    list_display = ('get_email', 'get_ref', 'get_color', 'total', 'billing_country', 'shipping_country', 'active')
+    list_display = (
+        'get_email', 'get_ref', 'get_color', 'total', 'billing_country', 'shipping_country', 'created_at', 'active')
     list_display_links = ('get_email', 'get_ref',)
     list_editable = ('active',)
     search_fields = ('products__ref', 'client__email')

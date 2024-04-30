@@ -6,5 +6,3 @@ class CountryRepository:
     def get_country_data():
         """ Get country data """
         return Country.objects.all()
-
-

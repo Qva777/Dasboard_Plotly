@@ -1,7 +1,5 @@
 from django.db.models import Sum
-
 from ordercast_order.models import Order
-
 from ordercast_client.models import Client
 
 
@@ -43,3 +41,16 @@ class OrderRepository:
             'orders_count': orders_count,
             'total_turnover': total_turnover,
         }
+
+    @staticmethod
+    def get_related_client():
+        """ User table best-selling """
+        return (
+            Order.objects.select_related('client', 'products')
+            .values('client__username', 'client__email', 'products__ref', 'products__color', 'total')
+        )
+
+    @staticmethod
+    def get_related_country():
+        """ Country table best-selling """
+        return Order.objects.all().select_related('products', 'client', 'billing_country')

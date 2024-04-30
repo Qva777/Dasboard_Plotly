@@ -1,44 +1,35 @@
-from django_plotly_dash import DjangoDash
+import datetime
 import dash_table
-from dash import html, dcc
 import plotly.graph_objs as go
+from dash import html, dcc
+from dash.dependencies import Input, Output
+
+from django.db.models import Q
+from django_plotly_dash import DjangoDash
+
 from ordercast_client.repositories import ClientRepository
 from ordercast_country.repositories import CountryRepository
-from ordercast_order.models import Order
-from dash.dependencies import Input, Output
-from datetime import date
-
 from ordercast_order.repositories import OrderRepository
-from plotly_app.style import button_style, input_style, dropdown
+
+from plotly_app.style import input_style, dropdown
 
 # Create a DjangoDash app
 app = DjangoDash('BestSelling')
 
-# Country
-countries = CountryRepository.get_country_data()
-dropdown_countries = [{'label': country.name, 'value': country.code} for country in countries]
-
-# Client
-clients = ClientRepository.get_client_data()
-dropdown_clients = [{'label': client.tariff_name, 'value': client.tariff_name} for client in clients]
-
-# Order
-orders = Order.objects.all().select_related('products', 'client', 'billing_country')
-order_data = [
+# Order country
+orders = OrderRepository.get_related_country()
+order_country_data = [
     {
         'ref': order.products.ref,
         'color': order.products.color,
         'tariff_name': order.client.tariff_name,
         'billing_country': order.billing_country.name,
-        'created_at': order.created_at
     }
     for order in orders
 ]
 
-order_client_data = Order.objects.select_related('client', 'products').values(
-    'client__username', 'client__email', 'products__ref', 'products__color', 'total', 'created_at'
-)
-
+# Order client
+order_client_data = OrderRepository.get_related_client()
 client_data = [
     {
         "username": order["client__username"],
@@ -46,31 +37,29 @@ client_data = [
         "ref": order["products__ref"],
         "color": order["products__color"],
         "price": order["total"],
-        "created_at": order["created_at"]
     }
     for order in order_client_data
 ]
-
-client_columns = ["username", "email", "ref", "color", "price"]
-
-client_initial_active_cell = {'row': 0, 'column': 0}
 
 # Layout of the app
 app.layout = html.Div(
     [
         html.Br(),
         dcc.Graph(id='table-graph'),
-        dcc.DatePickerRange(
-            minimum_nights=5,
-            clearable=True,
-            with_portal=True,
-            start_date=date(2017, 6, 21)
-        ),
 
-        html.Button('Today', id='btn-nclicks-1', n_clicks=0, style=button_style),
-        html.Button('Week', id='btn-nclicks-2', n_clicks=0, style=button_style),
-        html.Button('Month', id='btn-nclicks-3', n_clicks=0, style=button_style),
-        html.Button('All time', id='btn-nclicks-4', n_clicks=0, style=button_style),
+        html.Div([
+            dcc.Dropdown(
+                id='time-filter',
+                options=[
+                    {'label': 'Today', 'value': 'today'},
+                    {'label': 'Week', 'value': 'week'},
+                    {'label': 'Month', 'value': 'month'},
+                    {'label': 'All Time', 'value': 'all_time'},
+                ],
+                value='all_time',
+                clearable=False,
+            )
+        ]),
 
         html.Br(),
         html.H2("Best selling products by merchant"),
@@ -81,6 +70,7 @@ app.layout = html.Div(
                 type="text",
                 placeholder="Hector & Sons",
                 style=input_style,
+
             ),
         ], style={'display': 'flex', 'flexDirection': 'row'}),
 
@@ -90,11 +80,12 @@ app.layout = html.Div(
                     html.Br(),
                     dash_table.DataTable(
                         id="client-table",
-                        columns=[{"name": c, "id": c} for c in client_columns],
+                        columns=[{"name": c, "id": c} for c in ["username", "email", "ref", "color", "price"]],
                         data=client_data,
                         page_size=10,
                         sort_action="native",
-                        active_cell=client_initial_active_cell,
+                        style_cell=dict(textAlign='center'),
+
                     )
                 ],
             ),
@@ -110,32 +101,36 @@ app.layout = html.Div(
                 placeholder="Search by product",
                 style=input_style,
             ),
+
             dcc.Dropdown(
                 id='country-dropdown',
-                options=dropdown_countries,
+                options=[],
                 multi=True,
                 placeholder="Select country",
                 style=dropdown,
             ),
+
             dcc.Dropdown(
                 id='tariff-dropdown',
-                options=dropdown_clients,
+                options=[],
                 multi=True,
                 placeholder="All price rates",
                 style=dropdown,
             ),
+
         ], style={'display': 'flex', 'flexDirection': 'row'}),
 
         html.Div(children=[
             html.Div([
                 dash_table.DataTable(
                     id="table",
-                    columns=[{"name": c, "id": c} for c in
-                             ["ref", "color", "tariff_name", "billing_country", "created_at"]],
-                    data=order_data,
+                    columns=[{"name": c, "id": c} for c in ["ref", "color", "tariff_name", "billing_country"]],
+                    data=order_country_data,
                     page_size=10,
                     sort_action="native",
                     filter_action="native",
+                    style_cell=dict(textAlign='center'),
+
                 ),
             ], style={'margin-top': '15px'}),
         ]),
@@ -144,10 +139,8 @@ app.layout = html.Div(
 )
 
 
-@app.callback(
-    Output('table-graph', 'figure'),
-    [Input('table', 'active_cell')]
-)
+@app.callback(Output('table-graph', 'figure'),
+              [Input('table', 'active_cell')])
 def update_figure(active_cell):
     """ Short info about user in the table """
 
@@ -180,60 +173,114 @@ def update_figure(active_cell):
     return fig
 
 
-@app.callback(
-    Output("table", "data"),
-    [Input("search-input", "value"),
-     Input("country-dropdown", "value"),
-     Input("tariff-dropdown", "value")]
-)
-def update_table(search_query, selected_countries, selected_tariff):
-    filtered_data = order_data
+def filter_queryset(queryset, search_query=None, selected_countries=None, selected_tariff=None, time_filter=None):
+    """ Filter for queryset """
 
     if search_query:
-        search_query_lower = search_query.lower()
-        filtered_data = [
-            order for order in filtered_data
-            if search_query_lower in order["ref"].lower()
-        ]
+        queryset = queryset.filter(
+            Q(products__ref__icontains=search_query) |
+            Q(client__username__icontains=search_query) |
+            Q(client__email__icontains=search_query)
+        )
 
     if selected_countries:
-        selected_country_labels = [option['label'] for option in dropdown_countries if
-                                   option['value'] in selected_countries]
-        filtered_data = [
-            order for order in filtered_data
-            if order["billing_country"] in selected_country_labels
-        ]
+        countries = CountryRepository.get_country_data()
+        unique_countries = {country.code: country.name for country in countries}
+        dropdown_countries = [{'label': name, 'value': code} for code, name in unique_countries.items()]
+
+        selected_country_labels = [
+            option['label'] for option in dropdown_countries if option['value'] in selected_countries]
+
+        queryset = queryset.filter(billing_country__name__in=selected_country_labels)
 
     if selected_tariff:
-        selected_tariff_labels = [option['label'] for option in dropdown_clients if option['value'] in selected_tariff]
-        filtered_data = [
-            order for order in filtered_data
-            if order["tariff_name"] in selected_tariff_labels
-        ]
+        queryset = queryset.filter(client__tariff_name__in=selected_tariff)
+
+    if time_filter == "today":
+        queryset = queryset.filter(created_at__date=datetime.date.today())
+    elif time_filter == "week":
+        end_date = datetime.date.today()
+        start_date = end_date - datetime.timedelta(days=6)
+        queryset = queryset.filter(created_at__date__range=[start_date, end_date])
+    elif time_filter == "month":
+        end_date = datetime.date.today()
+        start_date = end_date - datetime.timedelta(days=29)
+        queryset = queryset.filter(created_at__date__range=[start_date, end_date])
+
+    return queryset
+
+
+@app.callback(Output("client-table", "data"),
+              [Input("search-client", "value"),
+               Input("time-filter", "value")])
+def update_table_client(search_query, time_filter):
+    """ When the page reloads, also reloads the table """
+
+    # Construct base queryset
+    queryset = OrderRepository.get_related_client()
+
+    # Filter the queryset
+    queryset = filter_queryset(queryset, search_query=search_query, time_filter=time_filter)
+
+    # Retrieve filtered data
+    filtered_data = [
+        {
+            "username": entry["client__username"],
+            "email": entry["client__email"],
+            "ref": entry["products__ref"],
+            "color": entry["products__color"],
+            "price": entry["total"],
+        }
+        for entry in queryset
+    ]
 
     return filtered_data
 
 
-@app.callback(
-    Output("client-table", "data"),
-    [Input("search-client", "value"),
-     Input("btn-nclicks-1", "n_clicks")]
-)
-def update_table(search_query, n_clicks):
-    print("Search Query:", search_query)
+@app.callback([
+    Output('country-dropdown', 'options'),
+    Output('tariff-dropdown', 'options')],
+    [Input('country-dropdown', 'value'),
+     Input('tariff-dropdown', 'value')])
+def update_dropdowns(selected_countries, selected_tariffs):
+    """ When the page reloads, also reloads the dropdown """
 
-    filtered_data = client_data
+    # Update options for country dropdown
+    countries = CountryRepository.get_country_data()
+    unique_countries = {country.code: country.name for country in countries}
+    dropdown_countries = [{'label': name, 'value': code} for code, name in unique_countries.items()]
 
-    if search_query:
-        search_query_lower = search_query.lower()
-        filtered_data = [
-            client for client in filtered_data
-            if search_query_lower in client["username"].lower() or
-               search_query_lower in client["email"].lower()
-        ]
+    # Update options for tariff dropdown
+    clients = ClientRepository.get_client_data()
+    unique_tariffs = {client.tariff_name: client.tariff_name for client in clients}
+    dropdown_clients = [{'label': name, 'value': name} for name in unique_tariffs]
 
-    #  filter "Today"
-    if n_clicks:
-        filtered_data = [client for client in filtered_data if client['created_at'].date() == date.today()]
+    return dropdown_countries, dropdown_clients
+
+
+@app.callback(Output("table", "data"),
+              [Input("search-input", "value"),
+               Input("country-dropdown", "value"),
+               Input("tariff-dropdown", "value"),
+               Input("time-filter", "value")])
+def update_table_country(search_query, selected_countries, selected_tariff, time_filter):
+    """ When the page reloads, also reloads the table """
+
+    # Construct base queryset
+    queryset = OrderRepository.get_related_country()
+
+    # Filter the queryset
+    queryset = filter_queryset(queryset, search_query, selected_countries, selected_tariff, time_filter)
+
+    # Retrieve filtered data
+    filtered_data = [
+        {
+            'ref': order.products.ref,
+            'color': order.products.color,
+            'tariff_name': order.client.tariff_name,
+            'billing_country': order.billing_country.name,
+        }
+        for order in queryset
+    ]
 
     return filtered_data
